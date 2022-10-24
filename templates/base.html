@@ -2,11 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    {% block title %}{% endblock title %}
+    <title>Guess the number</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    {% block content %}
-    {% endblock content %}
+    <div class="center margin-top-10">
+        <h1>Welcome to Guess the number game! A thrilling game where you have to Guess a number between 1 and 30!</h1>
+        <h3>Do you have what it takes?</h3>
+
+        {% block main %}
+        {% endblock main %}
+
+        {% block wrong_guess %}
+        {% endblock wrong_guess %}
+    </div>
 </body>
 </html>
