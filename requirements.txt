@@ -1,0 +1,2 @@
+Flask==2.0.3 #server
+gunicorn==19.9.0 #deployment

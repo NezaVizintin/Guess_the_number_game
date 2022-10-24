@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}<title>Guess the number</title>{% endblock title %}
+
+{% block content %}
+    <div class="center">
+        <form method="post" action="/">
+            <label for="numberguess">Guess and press enter: </label>
+            <input type="number" id="numberguess" name="number-input" placeholder="Guess">
+        </form>
+        <p>{{ number_secret, number }}</p>
+    </div>
+{% endblock content %}
