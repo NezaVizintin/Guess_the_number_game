@@ -1,11 +1,34 @@
 {% extends "base.html" %}
 
+
+    {% block head_main %}
+        <h1>Welcome to Guess the number game! A thrilling game where you have to Guess a number between 1 and 30!</h1>
+        <h3>Do you have what it takes?</h3>
+    {% endblock head_main %}
+
+
+    {% block head_success %}
+        <h1>Great success!</h1>
+        <h3>Try again if you're feeling brave.</h3>
+    {% endblock head_success %}
+
+
 {% block main %}
     <div class="margin-top-10">
         <form method="post" action="/">
             <label for="numberguess">Guess and press enter: </label>
             <input type="number" id="numberguess" name="number-input" placeholder="Guess">
         </form>
-        <p>{{ number_secret, number }}</p> <!--zakaj, če se igra zaključi in osvežim index ostane number od prej?-->
+<!--        <p>{{ number_secret, number }}</p>-->
     </div>
 {% endblock main %}
+
+{% block wrong_guess %}
+    {% if guess == "higher" %}
+        <p>Oh no, too low! Try going a higher!</p>
+    {% elif guess == "lower" %}
+        <p>Oh jeez, too high! Try going lower!</p>
+    {% elif guess == "invalid" %}
+        <p>Oh shoot, what did you do? That doesn't seem like a valid number!</p>
+    {% endif %}
+{% endblock wrong_guess %}

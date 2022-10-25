@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7018508b-414d-422c-a073-f96793935e8e" name="Default Changelist" comment="" />
+    <list default="true" id="7018508b-414d-422c-a073-f96793935e8e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/correct.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/incorrect.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -15,7 +23,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/Guess-the-Number-Game" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="2FuQgIJWg3Jbb4uIBmwnJeu1RbZ" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -29,7 +37,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../Neza_cv_personal_website" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -80,30 +88,55 @@
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.css" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/Guess-the-Number-Game" />
+    </ignored-roots>
+  </component>
   <component name="WindowStateProjectService">
     <state x="580" y="188" key="FileChooserDialogImpl" timestamp="1665506282066">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="580" y="188" key="FileChooserDialogImpl/0.0.1600.860@0.0.1600.860" timestamp="1665506282066" />
-    <state width="1579" height="102" key="GridCell.Tab.0.bottom" timestamp="1666626135213">
+    <state width="1579" height="217" key="GridCell.Tab.0.bottom" timestamp="1666717266084">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1579" height="102" key="GridCell.Tab.0.bottom/0.0.1600.860@0.0.1600.860" timestamp="1666626135213" />
-    <state width="1579" height="102" key="GridCell.Tab.0.center" timestamp="1666626135212">
+    <state width="1579" height="217" key="GridCell.Tab.0.bottom/0.0.1600.860@0.0.1600.860" timestamp="1666717266084" />
+    <state width="1579" height="217" key="GridCell.Tab.0.center" timestamp="1666717266084">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1579" height="102" key="GridCell.Tab.0.center/0.0.1600.860@0.0.1600.860" timestamp="1666626135212" />
-    <state width="1579" height="102" key="GridCell.Tab.0.left" timestamp="1666626135212">
+    <state width="1579" height="217" key="GridCell.Tab.0.center/0.0.1600.860@0.0.1600.860" timestamp="1666717266084" />
+    <state width="1579" height="217" key="GridCell.Tab.0.left" timestamp="1666717266084">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1579" height="102" key="GridCell.Tab.0.left/0.0.1600.860@0.0.1600.860" timestamp="1666626135212" />
-    <state width="1579" height="102" key="GridCell.Tab.0.right" timestamp="1666626135212">
+    <state width="1579" height="217" key="GridCell.Tab.0.left/0.0.1600.860@0.0.1600.860" timestamp="1666717266084" />
+    <state width="1579" height="217" key="GridCell.Tab.0.right" timestamp="1666717266084">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1579" height="102" key="GridCell.Tab.0.right/0.0.1600.860@0.0.1600.860" timestamp="1666626135212" />
-    <state x="303" y="75" key="SettingsEditor" timestamp="1666446735878">
+    <state width="1579" height="217" key="GridCell.Tab.0.right/0.0.1600.860@0.0.1600.860" timestamp="1666717266084" />
+    <state width="1579" height="276" key="GridCell.Tab.1.bottom" timestamp="1666714832629">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state x="303" y="75" key="SettingsEditor/0.0.1600.860@0.0.1600.860" timestamp="1666446735878" />
+    <state width="1579" height="276" key="GridCell.Tab.1.bottom/0.0.1600.860@0.0.1600.860" timestamp="1666714832629" />
+    <state width="1579" height="276" key="GridCell.Tab.1.center" timestamp="1666714832629">
+      <screen x="0" y="0" width="1600" height="860" />
+    </state>
+    <state width="1579" height="276" key="GridCell.Tab.1.center/0.0.1600.860@0.0.1600.860" timestamp="1666714832629" />
+    <state width="1579" height="276" key="GridCell.Tab.1.left" timestamp="1666714832629">
+      <screen x="0" y="0" width="1600" height="860" />
+    </state>
+    <state width="1579" height="276" key="GridCell.Tab.1.left/0.0.1600.860@0.0.1600.860" timestamp="1666714832629" />
+    <state width="1579" height="276" key="GridCell.Tab.1.right" timestamp="1666714832629">
+      <screen x="0" y="0" width="1600" height="860" />
+    </state>
+    <state width="1579" height="276" key="GridCell.Tab.1.right/0.0.1600.860@0.0.1600.860" timestamp="1666714832629" />
+    <state x="303" y="75" key="SettingsEditor" timestamp="1666709518979">
+      <screen x="0" y="0" width="1600" height="860" />
+    </state>
+    <state x="303" y="75" key="SettingsEditor/0.0.1600.860@0.0.1600.860" timestamp="1666709518979" />
+    <state x="508" y="257" key="com.intellij.ide.util.TipDialog" timestamp="1666713368124">
+      <screen x="0" y="0" width="1600" height="860" />
+    </state>
+    <state x="508" y="257" key="com.intellij.ide.util.TipDialog/0.0.1600.860@0.0.1600.860" timestamp="1666713368124" />
   </component>
 </project>

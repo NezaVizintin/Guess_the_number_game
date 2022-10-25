@@ -7,14 +7,21 @@
 </head>
 <body>
     <div class="center margin-top-10">
-        <h1>Welcome to Guess the number game! A thrilling game where you have to Guess a number between 1 and 30!</h1>
-        <h3>Do you have what it takes?</h3>
+        {% if head == "main" %}
+            {% block head_main %}
+            {% endblock head_main %}
+        {% elif head == "success" %}
+            {% block head_success %}
+            {% endblock head_success %}
+        {% endif %}
 
         {% block main %}
         {% endblock main %}
 
-        {% block wrong_guess %}
-        {% endblock wrong_guess %}
+        {% if incorrect == True %}
+            {% block wrong_guess %}
+            {% endblock wrong_guess %}
+        {% endif %}
     </div>
 </body>
 </html>
