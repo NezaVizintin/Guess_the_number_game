@@ -1,11 +1,22 @@
-import json
-import datetime
-import operator
+# import json
+# import datetime
+# import operator
 import random
+from flask import request
+from models import User, database
 
 def number_secret_generate():
     secret = random.randint(1, 30)
     return secret
+
+def user_check():
+    last_email = request.cookies.get("email")
+    if last_email:
+        user = database.query(User).filter_by(email=last_email).first() # zakaj mora bit .first()?
+    else:
+        user = None
+
+    return user
 
 # PREEXISTING CODE FOR REFERENCE
 #

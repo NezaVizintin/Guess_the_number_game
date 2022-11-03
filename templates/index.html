@@ -1,34 +1,57 @@
 {% extends "base.html" %}
 
-
-    {% block head_main %}
+<!--Head blocks-->
+{% block head_main %}
+    <div class="center-text">
         <h1>Welcome to Guess the number game! A thrilling game where you have to Guess a number between 1 and 30!</h1>
         <h3>Do you have what it takes?</h3>
-    {% endblock head_main %}
+    </div>
+{% endblock head_main %}
 
+{% block head_logged_in %}
+    <div class="center-text">
+        <h1>Oh, hi {{user.name.capitalize()}}.</h1>
+    </div>
+{% endblock head_logged_in %}
 
-    {% block head_success %}
-        <h1>Great success!</h1>
+{% block head_success %}
+    <div class="center-text">
+        <h1>Great success {{user.name.capitalize()}}!</h1>
         <h3>Try again if you're feeling brave.</h3>
-    {% endblock head_success %}
+    </div>
+{% endblock head_success %}
 
 
-{% block main %}
-    <div class="margin-top-10">
+
+<!--login or game-->
+{% block main_login %}
+    <form method="post" action="/login" class="margin-top-10 center-column">
+        <input type="text" name="user-name" placeholder="Enter your username">
+        <input type="email" name="user-email" placeholder="Enter your e-mail">
+        <br>
+        <button>Submit</button>
+    </form>
+{% endblock main_login %}
+
+{% block main_game %}
+    <div class="margin-top-10 center-row">
         <form method="post" action="/">
             <label for="numberguess">Guess and press enter: </label>
             <input type="number" id="numberguess" name="number-input" placeholder="Guess">
         </form>
 <!--        <p>{{ number_secret, number }}</p>-->
     </div>
-{% endblock main %}
+{% endblock main_game %}
 
+<!--Wrong guess responses-->
 {% block wrong_guess %}
-    {% if guess == "higher" %}
-        <p>Oh no, too low! Try going a higher!</p>
-    {% elif guess == "lower" %}
-        <p>Oh jeez, too high! Try going lower!</p>
-    {% elif guess == "invalid" %}
-        <p>Oh shoot, what did you do? That doesn't seem like a valid number!</p>
-    {% endif %}
+    <div class="center-text">
+        {% if guess == "higher" %}
+            <p>Oh no, too low! Try going a higher!</p>
+        {% elif guess == "lower" %}
+            <p>Oh jeez, too high! Try going lower!</p>
+        {% elif guess == "invalid" %}
+            <p>Shoot, what did you do? That doesn't seem like a valid number!</p>
+        {% endif %}
+    </div>
 {% endblock wrong_guess %}

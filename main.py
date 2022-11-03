@@ -1,36 +1,61 @@
 from functions import *
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, make_response, redirect, url_for
+from models import User, database
 
 app = Flask(__name__)
+database.create_all() # creates (new) tables in the database
+
+# TO-DO: naredi response v funkcijo, da samo dodas potrebne argumente (ne da vsakič vse piše)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    if request.method == "GET": #what you take from the server
-        number_secret = request.cookies.get("number_set") #get the set secret number
-        if not isinstance(number_secret, str) or not number_secret.isnumeric():
-            number_secret = number_secret_generate() #checks if there already is a secret number and generates one if there isn't
-
-        response = make_response(render_template("index.html", head="main", number_secret=number_secret)) #creates a response - renders template including the variable with the secret number
-        response.set_cookie("number_set", str(number_secret)) #creates cookie with the secret number
+    if request.method == "GET": # what you take from the server
+        user = user_check() # checks if there is a cookie with the user's email and creates a user object if there is
+        response = make_response(render_template("index.html", head="main", user=user)) # creates a response - renders template including the variable with the secret number
 
         return response
 
-    elif request.method == "POST": #what you tell the server
-        number_secret = int(request.cookies.get("number_set")) #gets cookie with secret number
-        number_input = int(request.form.get("number-input")) #gets user input number from website form
+    elif request.method == "POST": # what you tell the server
+        user = user_check()
+        number_secret = user.number_secret # gets secret number for this user from the database
+        number_input = int(request.form.get("number-input")) # gets user input number from website form
 
-        if number_input >= 30 or number_input <= 0:
-            response = make_response(render_template("index.html", head="main", incorrect=True, guess="invalid", number_secret=number_secret))
-        elif number_input == number_secret: # if numbers match, makes response, sets a new secret number and creates a cookie with it
-            response = make_response(render_template("index.html", head="success", incorrect=False, number=number_input, number_secret=number_secret))
-            number_secret_new = number_secret_generate()
-            response.set_cookie("number_set", str(number_secret_new))
-        elif  number_input < number_secret:
-            response = make_response(render_template("index.html", head="main", incorrect=True, guess="higher", number_secret=number_secret))
-        elif number_input > number_secret:
-            response = make_response(render_template("index.html", head="main", incorrect=True, guess="lower", number_secret=number_secret))
+        # checks the secret number and creates appropriate response
+        if number_input >= 30 or number_input <= 0: # user entered invalid number
+            response = make_response(render_template("index.html", head="main", user=user, incorrect=True, guess="invalid", number_secret=number_secret))
+        # if numbers match, makes response, sets a new secret number and creates a cookie with it
+        elif number_input == number_secret: # correct guess
+            response = make_response(render_template("index.html", head="success", user=user, incorrect=False, number=number_input, number_secret=number_secret))
+            user.number_secret = number_secret_generate()
+            user.save()
+        elif  number_input < number_secret: # user's number is too low
+            response = make_response(render_template("index.html", head="main", user=user, incorrect=True, guess="higher", number_secret=number_secret))
+        elif number_input > number_secret: # user's number is too high
+            response = make_response(render_template("index.html", head="main", user=user, incorrect=True, guess="lower", number_secret=number_secret))
 
         return response
+
+@app.route("/login", methods=["POST"])
+def login():
+    # gets data from form
+    name = request.form.get("user-name")
+    email = request.form.get("user-email")
+
+    try: # tries to save the data in to the database as a new user - if the email already exists this will fail
+        user = User(name=name, email=email)  # creates a User object
+        user.save() # saves the user object into the database
+    except: # if the user exists it creates that user as a a User object
+        user = database.query(User).filter_by(email=email).first()
+
+    if not user.number_secret:
+        user.number_secret = number_secret_generate()
+        user.save()
+
+
+    response = make_response(redirect(url_for("index"))) # creates response that will redirect to the index function (refreshes the site)
+    response.set_cookie("email", email) # sets cookie with the new email (if id doesn't exist yet) or saves the existig email in to a cookie to recognise the user
+
+    return response
 
 if __name__ == "__main__":
     app.run(use_reloader=True)

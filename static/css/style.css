@@ -1,5 +1,17 @@
-.center {
+.center-text {
     text-align: center;
+}
+
+.center-column{
+    display: flex;
+    align-items: center;
+    flex-direction: column
+}
+
+.center-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .margin-top-10{
@@ -10,7 +22,8 @@
     margin-top: 20%;
 }
 
+/*
 br {
     margin-bottom: 500px;
     background-color: yellow;
-}
+}*/
