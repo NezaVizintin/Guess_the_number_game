@@ -1,4 +1,4 @@
 Flask==2.0.3 #server
 gunicorn==19.9.0 #deployment
 sqla-wrapper==4.200628 #database
-psycopg2
+psycopg2 #only needed on Heroku (for connecting with the Heroku Postgres database), so no need to install it on localhost. Just add it in the requirements file, but don't install it on your computer
