@@ -1,11 +1,12 @@
 from functions import *
-from flask import Flask, render_template, request, make_response, redirect, url_for
+from flask import Flask, render_template, request, make_response, redirect, url_for, session
 from models import User, database
+import uuid, hashlib
 
 app = Flask(__name__)
 database.create_all() # creates (new) tables in the database
 
-# TO-DO: naredi response v funkcijo, da samo dodas potrebne argumente (ne da vsakič vse piše)
+# TO-DO: naredi response v funkcijo, da samo dodas potrebne argumente (ne da vsakič vse piše), izboljšave (glej discord temo)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -22,16 +23,16 @@ def index():
 
         # checks the secret number and creates appropriate response
         if number_input >= 30 or number_input <= 0: # user entered invalid number
-            response = make_response(render_template("index.html", head="main", user=user, incorrect=True, guess="invalid", number_secret=number_secret))
+            response = make_response(render_template("index.html", head="main", user=user, incorrect=True, guess="invalid"))
         # if numbers match, makes response, sets a new secret number and creates a cookie with it
         elif number_input == number_secret: # correct guess
-            response = make_response(render_template("index.html", head="success", user=user, incorrect=False, number=number_input, number_secret=number_secret))
+            response = make_response(render_template("index.html", head="success", user=user, incorrect=False, number=number_input))
             user.number_secret = number_secret_generate()
             user.save()
         elif  number_input < number_secret: # user's number is too low
-            response = make_response(render_template("index.html", head="main", user=user, incorrect=True, guess="higher", number_secret=number_secret))
+            response = make_response(render_template("index.html", head="main", user=user, incorrect=True, guess="higher"))
         elif number_input > number_secret: # user's number is too high
-            response = make_response(render_template("index.html", head="main", user=user, incorrect=True, guess="lower", number_secret=number_secret))
+            response = make_response(render_template("index.html", head="main", user=user, incorrect=True, guess="lower"))
 
         return response
 
@@ -40,22 +41,37 @@ def login():
     # gets data from form
     name = request.form.get("user-name")
     email = request.form.get("user-email")
+    password = request.form.get("user-password")
 
-    try: # tries to save the data in to the database as a new user - if the email already exists this will fail
-        user = User(name=name, email=email)  # creates a User object
-        user.save() # saves the user object into the database
-    except: # if the user exists it creates that user as a a User object
-        user = database.query(User).filter_by(email=email).first()
+    user = database.query(User).filter_by(email=email).first()
+    hashed_password = hashlib.sha3_256(password.encode()).hexdigest() # hashes the password
+
+    if not user:
+        # create a User object
+        user = User(name=name, email=email, password=hashed_password)
+        user.save()
 
     if not user.number_secret:
         user.number_secret = number_secret_generate()
         user.save()
 
+    if hashed_password != user.password: # check if password is incorrect
+        return "WRONG PASSWORD! Go back and try again."
+    elif hashed_password == user.password:
+        # creates a random session token for this user
+        session_token = str(uuid.uuid4())
 
-    response = make_response(redirect(url_for("index"))) # creates response that will redirect to the index function (refreshes the site)
-    response.set_cookie("email", email) # sets cookie with the new email (if id doesn't exist yet) or saves the existig email in to a cookie to recognise the user
+        # saves it in the database
+        user.session_token = session_token
+        user.save()
 
-    return response
+        # creates response
+        response = make_response(redirect(url_for("index"))) # creates response that will redirect to the index function (refreshes the site)
+        response.set_cookie("session_token", session_token, httponly=True, samesite="Strict") # sets cookie with the new email (if id doesn't exist yet) or saves the existig email in to a cookie to recognise the user
+                                                                                            # httponly=True - cookie cannot be accessed via JavaScript. JS can be used to hack the site
+                                                                                            # Thirdly you can also add secure=True, which would mean cookies can only be sent via HTTPS. Internet protocols that are NOT HTTPS are not secure.
+                                                                                            # But beware that this would mean cookies would not work on localhost, because your localhost uses HTTP (and not HTTPS).
+        return response
 
 if __name__ == "__main__":
     app.run(use_reloader=True)

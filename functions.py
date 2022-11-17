@@ -10,9 +10,10 @@ def number_secret_generate():
     return secret
 
 def user_check():
-    last_email = request.cookies.get("email")
-    if last_email:
-        user = database.query(User).filter_by(email=last_email).first() # zakaj mora bit .first()?
+    session_token = request.cookies.get("session_token")
+
+    if session_token:
+        user = database.query(User).filter_by(session_token=session_token).first() # zakaj mora bit .first()?
     else:
         user = None
 

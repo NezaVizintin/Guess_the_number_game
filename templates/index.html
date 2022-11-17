@@ -21,15 +21,15 @@
     </div>
 {% endblock head_success %}
 
-
-
 <!--login or game-->
 {% block main_login %}
     <form method="post" action="/login" class="margin-top-10 center-column">
         <input type="text" name="user-name" placeholder="Enter your username">
         <input type="email" name="user-email" placeholder="Enter your e-mail">
+        <input type="password" name="user-password" placeholder="Enter your password">
         <br>
         <button>Submit</button>
+        {{password_check}}
     </form>
 {% endblock main_login %}
 
