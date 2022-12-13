@@ -19,6 +19,9 @@ def user_check():
 
     return user
 
+def user_get_all():
+    return database.query(User).all()
+
 # PREEXISTING CODE FOR REFERENCE
 #
 # def run_game_easy():

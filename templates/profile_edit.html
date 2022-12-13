@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Edit profile{% endblock title %}
+
+{% block content %}
+    <h3>Edit your profile</h3>
+
+    <form method="post">
+        <p>
+            <strong>Your name:</strong>
+            <input type="text" value="{{ user.name }}" name="profile-name"> <!--the value="" attribute in the <input> field shows current name and email-->
+        </p>
+
+        <p>
+            <strong>Your email:</strong>
+            <input type="email" value="{{ user.email }}" name="profile-email">
+        </p>
+        <div class="center-column">
+            <button>Submit</button>
+        </div>
+    </form>
+{% endblock content %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Delete profile{% endblock title %}
+
+{% block content %}
+    <h3>Delete your profile</h3>
+
+    <form method="post">
+        <p>Do you really want to delete your profile?</p>
+
+        <div class="center-text">
+            <button>Yes, delete</button> or <a href="/profile">cancel</a>
+        </div>
+    </form>
+{% endblock content %}

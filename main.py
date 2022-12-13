@@ -67,11 +67,60 @@ def login():
 
         # creates response
         response = make_response(redirect(url_for("index"))) # creates response that will redirect to the index function (refreshes the site)
-        response.set_cookie("session_token", session_token, httponly=True, samesite="Strict") # sets cookie with the new email (if id doesn't exist yet) or saves the existig email in to a cookie to recognise the user
+        response.set_cookie("session_token", session_token, httponly=True, samesite="Strict") # sets cookie with the new email (if id doesn't exist yet) or saves the existing email in to a cookie to recognise the user
                                                                                             # httponly=True - cookie cannot be accessed via JavaScript. JS can be used to hack the site
                                                                                             # Thirdly you can also add secure=True, which would mean cookies can only be sent via HTTPS. Internet protocols that are NOT HTTPS are not secure.
-                                                                                            # But beware that this would mean cookies would not work on localhost, because your localhost uses HTTP (and not HTTPS).
+                                                                                            # Beware - this would mean cookies would not work on localhost, because localhost uses HTTP (and not HTTPS).
         return response
+
+@app.route("/profile", methods=["GET"])
+def profile():
+    user = user_check()
+
+    if user:
+        return render_template("profile.html", user=user)
+    else:
+        return redirect(url_for("index"))
+
+@app.route("/profile/edit", methods=["GET", "POST"])
+def profile_edit():
+    user = user_check()
+
+    if request.method == "GET": # checks the type of the request
+        if user:  # if user is found
+            return render_template("profile_edit.html", user=user)
+        else:
+            return redirect(url_for("index"))
+    elif request.method == "POST":
+        name = request.form.get("profile-name")
+        email = request.form.get("profile-email")
+
+        # updates the user object and stores changes
+        user.name = name
+        user.email = email
+        user.save()
+
+        return redirect(url_for("profile"))
+
+@app.route("/profile/delete", methods=["GET", "POST"])
+def profile_delete():
+    user = user_check()
+
+    if request.method == "GET":
+        if user:
+            return render_template("profile_delete.html", user=user)
+        else:
+            return redirect(url_for("index"))
+    elif request.method == "POST":
+        user.delete() # deletes the user in the database
+
+    return redirect(url_for("index"))
+
+@app.route("/users", methods=["GET"])
+def users():
+    users = user_get_all()
+
+    return render_template("users.html", users=users)
 
 if __name__ == "__main__":
     app.run(use_reloader=True)

@@ -2,38 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Guess the number</title>
+
+    <title>{% block title %}{% endblock title %}</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <div class="margin-top-10">
-        {% if head == "main" %}
-            {% if user %}
-                {% block head_logged_in %}
-                {% endblock head_logged_in %}
-            {% else %}
-                {% block head_main %}
-                {% endblock head_main %}
-            {% endif %}
-        {% elif head == "success" %}
-            {% block head_success %}
-            {% endblock head_success %}
-        {% endif %}
+    <p>
+        <a href="/">Game</a> | <a href="/profile">Profile</a> | <a href="/users">All users</a>
+    </p>
 
-        {% if user %}
-            {% block main_game %}
-            {% endblock main_game %}
-
-        {% else %}
-            {% block main_login %}
-            {% endblock main_login %}
-        {% endif %}
-
-
-        {% if incorrect == True %}
-            {% block wrong_guess %}
-            {% endblock wrong_guess %}
-        {% endif %}
+    <div class="margin-top-10 center-column">
+        {% block content %}{% endblock content %}
     </div>
 </body>
 </html>
