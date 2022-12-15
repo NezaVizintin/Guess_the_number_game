@@ -13,14 +13,17 @@ def user_check():
     session_token = request.cookies.get("session_token")
 
     if session_token:
-        user = database.query(User).filter_by(session_token=session_token).first() # zakaj mora bit .first()?
+        user = database.query(User).filter_by(session_token=session_token, deleted=False).first() # if a session token exists gets the user with that token IF the user is not deleted ---zakaj mora bit .first()?
     else:
         user = None
 
     return user
 
+def user_get_with_id(user_id):
+    return database.query(User).get(int(user_id))
+
 def user_get_all():
-    return database.query(User).all()
+    return database.query(User).filter_by(deleted=False).all()
 
 # PREEXISTING CODE FOR REFERENCE
 #

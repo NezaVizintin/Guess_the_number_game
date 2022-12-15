@@ -1,5 +1,5 @@
 from functions import *
-from flask import Flask, render_template, request, make_response, redirect, url_for, session
+from flask import Flask, render_template, request, make_response, redirect, url_for
 from models import User, database
 import uuid, hashlib
 
@@ -8,6 +8,7 @@ database.create_all() # creates (new) tables in the database
 
 # TO-DO: naredi response v funkcijo, da samo dodas potrebne argumente (ne da vsakič vse piše), izboljšave (glej discord temo)
 
+# creates main page, takes user input (number guesses) and generates appropriate response
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "GET": # what you take from the server
@@ -36,6 +37,7 @@ def index():
 
         return response
 
+# takes input from user (name, email, password) and reloads the page with given information:
 @app.route("/login", methods=["POST"])
 def login():
     # gets data from form
@@ -43,16 +45,13 @@ def login():
     email = request.form.get("user-email")
     password = request.form.get("user-password")
 
-    user = database.query(User).filter_by(email=email).first()
+    user = database.query(User).filter_by(email=email).first() # sees if user already exists
     hashed_password = hashlib.sha3_256(password.encode()).hexdigest() # hashes the password
+    number_secret = number_secret_generate() # generates secret number
 
     if not user:
         # create a User object
-        user = User(name=name, email=email, password=hashed_password)
-        user.save()
-
-    if not user.number_secret:
-        user.number_secret = number_secret_generate()
+        user = User(name=name, email=email, password=hashed_password, number_secret=number_secret)
         user.save()
 
     if hashed_password != user.password: # check if password is incorrect
@@ -61,17 +60,25 @@ def login():
         # creates a random session token for this user
         session_token = str(uuid.uuid4())
 
-        # saves it in the database
+        # saves session_token in the database
         user.session_token = session_token
         user.save()
 
-        # creates response
+        # creates response, saves session token in a cookie
         response = make_response(redirect(url_for("index"))) # creates response that will redirect to the index function (refreshes the site)
-        response.set_cookie("session_token", session_token, httponly=True, samesite="Strict") # sets cookie with the new email (if id doesn't exist yet) or saves the existing email in to a cookie to recognise the user
+        response.set_cookie("session_token", session_token, httponly=True, samesite="Strict") # sets cookie with the session token to recognise the user until the session expires or they log out
                                                                                             # httponly=True - cookie cannot be accessed via JavaScript. JS can be used to hack the site
-                                                                                            # Thirdly you can also add secure=True, which would mean cookies can only be sent via HTTPS. Internet protocols that are NOT HTTPS are not secure.
+                                                                                            # secure=True can be added, which would mean cookies can only be sent via HTTPS. Internet protocols that are NOT HTTPS are not secure.
                                                                                             # Beware - this would mean cookies would not work on localhost, because localhost uses HTTP (and not HTTPS).
         return response
+
+# deletes session and reloads page
+@app.route("/logout", methods=["GET"])
+def logout():
+    response = make_response(redirect(url_for("index")))
+    response.set_cookie("session_token", "session_token", expires=0)
+
+    return response
 
 @app.route("/profile", methods=["GET"])
 def profile():
@@ -112,15 +119,24 @@ def profile_delete():
         else:
             return redirect(url_for("index"))
     elif request.method == "POST":
-        user.delete() # deletes the user in the database
+        # user.delete()  deletes user from the database forever
+        user.deleted = True # fake deletes the user in the database (they no longer show up but can be reactivated)
+        user.save()
 
-    return redirect(url_for("index"))
+        return redirect(url_for("index"))
 
 @app.route("/users", methods=["GET"])
 def users():
     users = user_get_all()
 
     return render_template("users.html", users=users)
+
+@app.route("/user/<user_id>", methods=["GET"]) # <user_id> takes whatever is entered (in this case through users.html) and puts it into the user_id variable
+                                               # So if the id 3 is entered here, it will store 3 in the user_id variable. We can then use user_id in our handler code (to get the user object from the database).
+def user_details(user_id):
+    user = user_get_with_id(user_id)
+
+    return render_template("user_details.html", user=user)
 
 if __name__ == "__main__":
     app.run(use_reloader=True)
