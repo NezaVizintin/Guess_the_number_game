@@ -4,6 +4,7 @@
 import random
 from flask import request
 from models import User, database
+import hashlib
 
 def number_secret_generate():
     secret = random.randint(1, 30)
@@ -24,6 +25,9 @@ def user_get_with_id(user_id):
 
 def user_get_all():
     return database.query(User).filter_by(deleted=False).all()
+
+def password_hash(password):
+    return hashlib.sha3_256(password.encode()).hexdigest()
 
 # PREEXISTING CODE FOR REFERENCE
 #

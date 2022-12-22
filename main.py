@@ -1,7 +1,7 @@
 from functions import *
 from flask import Flask, render_template, request, make_response, redirect, url_for
 from models import User, database
-import uuid, hashlib
+import uuid
 
 app = Flask(__name__)
 database.create_all() # creates (new) tables in the database
@@ -46,7 +46,7 @@ def login():
     password = request.form.get("user-password")
 
     user = database.query(User).filter_by(email=email).first() # sees if user already exists
-    hashed_password = hashlib.sha3_256(password.encode()).hexdigest() # hashes the password
+    hashed_password = password_hash(password) # hashes the password
     number_secret = number_secret_generate() # generates secret number
 
     if not user:
@@ -72,14 +72,7 @@ def login():
                                                                                             # Beware - this would mean cookies would not work on localhost, because localhost uses HTTP (and not HTTPS).
         return response
 
-# deletes session and reloads page
-@app.route("/logout", methods=["GET"])
-def logout():
-    response = make_response(redirect(url_for("index")))
-    response.set_cookie("session_token", "session_token", expires=0)
-
-    return response
-
+# renders logged in user's profile
 @app.route("/profile", methods=["GET"])
 def profile():
     user = user_check()
@@ -89,6 +82,7 @@ def profile():
     else:
         return redirect(url_for("index"))
 
+# edits logged in user's information
 @app.route("/profile/edit", methods=["GET", "POST"])
 def profile_edit():
     user = user_check()
@@ -99,8 +93,24 @@ def profile_edit():
         else:
             return redirect(url_for("index"))
     elif request.method == "POST":
+        # gets form input
         name = request.form.get("profile-name")
         email = request.form.get("profile-email")
+        password_old = password_hash(request.form.get("profile-password-old"))
+        password_new_1 = password_hash(request.form.get("profile-password-new-1"))
+        password_new_2 = password_hash(request.form.get("profile-password-new-2"))
+
+        # checks if password fields were entered correctly and if they were updates user object with new password, if not an appropriate response is given
+        if password_old and password_new_1 and password_new_2:
+            if password_old == user.password:
+                if password_new_1 == password_new_2:
+                    user.password = password_new_1
+                else:
+                    return "The new passwords you entered do not match. Please go back and try again."
+            else:
+                return "The old (current) password you entered is not correct. Please go back and try again."
+        else:
+            return "You forgot to enter all three password fields. You must enter your old (current) password and your new password TWICE. Please go back and try again."
 
         # updates the user object and stores changes
         user.name = name
@@ -109,6 +119,7 @@ def profile_edit():
 
         return redirect(url_for("profile"))
 
+# fake deletes logged in user's profile
 @app.route("/profile/delete", methods=["GET", "POST"])
 def profile_delete():
     user = user_check()
@@ -125,18 +136,28 @@ def profile_delete():
 
         return redirect(url_for("index"))
 
+# renders page displaying all users
 @app.route("/users", methods=["GET"])
 def users():
     users = user_get_all()
 
     return render_template("users.html", users=users)
 
+# renders page for each user using their ID
 @app.route("/user/<user_id>", methods=["GET"]) # <user_id> takes whatever is entered (in this case through users.html) and puts it into the user_id variable
                                                # So if the id 3 is entered here, it will store 3 in the user_id variable. We can then use user_id in our handler code (to get the user object from the database).
 def user_details(user_id):
     user = user_get_with_id(user_id)
 
     return render_template("user_details.html", user=user)
+
+# deletes session and reloads page
+@app.route("/logout", methods=["GET"])
+def logout():
+    response = make_response(redirect(url_for("index")))
+    response.set_cookie("session_token", "session_token", expires=0)
+
+    return response
 
 if __name__ == "__main__":
     app.run(use_reloader=True)
