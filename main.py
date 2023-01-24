@@ -25,6 +25,7 @@ def index():
         # checks the secret number and creates appropriate response
         if number_input >= 30 or number_input <= 0: # user entered invalid number
             response = make_response(render_template("index.html", head="main", user=user, incorrect=True, guess="invalid"))
+
         # if numbers match, makes response, sets a new secret number and creates a cookie with it
         elif number_input == number_secret: # correct guess
             response = make_response(render_template("index.html", head="success", user=user, incorrect=False, number=number_input))
@@ -45,17 +46,24 @@ def login():
     email = request.form.get("user-email")
     password = request.form.get("user-password")
 
-    user = database.query(User).filter_by(email=email).first() # sees if user already exists
-    hashed_password = password_hash(password) # hashes the password
+    user = database.query(User).filter_by(email=email).first() # checks if user already exists using the user entered email and creates user object
+    hashed_password = password_hash(password) # hashes the user entered password
     number_secret = number_secret_generate() # generates secret number
 
-    if not user:
-        # create a User object
-        user = User(name=name, email=email, password=hashed_password, number_secret=number_secret)
-        user.save()
+
+
+    if not user: # if a user with that email doesn't exist
+        if database.query(User).filter_by(name=name).first(): # checks if there is already a user with the name the current user entered and responds
+            return "Gosh, it looks like that username already exists with a different email." \
+                   "If you already have an account login using the right email. Otherwise try another name to create a new account."
+        else: # if the new user entered a unique name
+            # creates the new User object in the database
+            user = User(name=name, email=email, password=hashed_password, number_secret=number_secret)
+            user.save()
 
     if hashed_password != user.password: # check if password is incorrect
-        return "WRONG PASSWORD! Go back and try again."
+        return "WRONG PASSWORD! :O Go back and try again."
+
     elif hashed_password == user.password:
         # creates a random session token for this user
         session_token = str(uuid.uuid4())
@@ -96,12 +104,15 @@ def profile_edit():
         # gets form input
         name = request.form.get("profile-name")
         email = request.form.get("profile-email")
-        password_old = password_hash(request.form.get("profile-password-old"))
-        password_new_1 = password_hash(request.form.get("profile-password-new-1"))
-        password_new_2 = password_hash(request.form.get("profile-password-new-2"))
+        password_old = request.form.get("profile-password-old")
+        password_new_1 = request.form.get("profile-password-new-1")
+        password_new_2 = request.form.get("profile-password-new-2")
 
         # checks if password fields were entered correctly and if they were updates user object with new password, if not an appropriate response is given
         if password_old and password_new_1 and password_new_2:
+            password_old = password_hash(password_old)
+            password_new_1 = password_hash(password_new_1)
+            password_new_2 = password_hash(password_new_2)
             if password_old == user.password:
                 if password_new_1 == password_new_2:
                     user.password = password_new_1
@@ -109,8 +120,8 @@ def profile_edit():
                     return "The new passwords you entered do not match. Please go back and try again."
             else:
                 return "The old (current) password you entered is not correct. Please go back and try again."
-        else:
-            return "You forgot to enter all three password fields. You must enter your old (current) password and your new password TWICE. Please go back and try again."
+        elif password_old or password_new_1 or password_new_2:
+            return "You didn't enter all three passwords. You must enter your old (current) password and your new password TWICE. Please go back and try again."
 
         # updates the user object and stores changes
         user.name = name
