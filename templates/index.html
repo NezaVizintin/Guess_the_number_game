@@ -42,11 +42,11 @@
     <!--Wrong guess responses-->
 
     {% if incorrect == True %}
-            {% if guess == "higher" %}
+            {% if wrong_guess_response == "higher" %}
                 <p>Oh no, too low! Try going a higher!</p>
-            {% elif guess == "lower" %}
+            {% elif wrong_guess_response == "lower" %}
                 <p>Oh jeez, too high! Try going lower!</p>
-            {% elif guess == "invalid" %}
+            {% elif wrong_guess_response == "invalid" %}
                 <p>Shoot, what did you do? That doesn't seem like a valid number!</p>
             {% endif %}
     {% endif %}

@@ -2,9 +2,10 @@
 # import datetime
 # import operator
 import random
-from flask import request
-from models import User, database
 import hashlib
+from flask import request, make_response, render_template, url_for, redirect
+from models import User, database
+
 
 def number_secret_generate():
     secret = random.randint(1, 30)
@@ -28,6 +29,14 @@ def user_get_all():
 
 def password_hash(password):
     return hashlib.sha3_256(password.encode()).hexdigest()
+
+def response_number_guesses(page, head, user, guess_correctness, wrong_guess_response, number_input):
+    response = make_response(render_template(page, head=head, user=user, incorrect=guess_correctness, wrong_guess_response=wrong_guess_response, number=number_input))
+
+    return response
+
+def response_redirect_index():
+    return make_response(redirect(url_for("index")))
 
 # PREEXISTING CODE FOR REFERENCE
 #

@@ -59,7 +59,6 @@ def test_profile(client_empty_database):
     assert user_name in response.data
     assert email in response.data
 
-
 def test_all_users(client_with_database_entry):
     # logs in
     client_with_database_entry.post('/login', data={"user-name": "Test User", "user-email": "test@user.com",

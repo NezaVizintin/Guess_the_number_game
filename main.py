@@ -1,22 +1,23 @@
 from functions import *
-from flask import Flask, render_template, request, make_response, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for
 from models import User, database
 import uuid
 
 app = Flask(__name__)
 database.create_all() # creates (new) tables in the database
 
-# TO-DO: naredi response v funkcijo, da samo dodas potrebne argumente (ne da vsakič vse piše), izboljšave (glej discord temo)
+#TODO izboljšave (glej discord temo)
 
 # creates main page, takes user input (number guesses) and generates appropriate response
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "GET": # what you take from the server
         user = user_check() # checks if there is a cookie with the user's email and creates a user object if there is
-        response = make_response(render_template("index.html", head="main", user=user)) # creates a response - renders template including the variable with the secret number
+        response = response_number_guesses("index.html", "main", user, None, None, None) # creates a response - renders template including the variable with the secret number
 
         return response
 
+    # secret number game
     elif request.method == "POST": # what you tell the server
         user = user_check()
         number_secret = user.number_secret # gets secret number for this user from the database
@@ -24,17 +25,16 @@ def index():
 
         # checks the secret number and creates appropriate response
         if number_input >= 30 or number_input <= 0: # user entered invalid number
-            response = make_response(render_template("index.html", head="main", user=user, incorrect=True, guess="invalid"))
-
-        # if numbers match, makes response, sets a new secret number and creates a cookie with it
+            response = response_number_guesses("index.html", "main", user, True, "invalid", None)
         elif number_input == number_secret: # correct guess
-            response = make_response(render_template("index.html", head="success", user=user, incorrect=False, number=number_input))
+            response = response_number_guesses("index.html", "success", user, False, None, number_input)
+            # if numbers match, makes response, sets a new secret number and creates a cookie with it
             user.number_secret = number_secret_generate()
             user.save()
         elif  number_input < number_secret: # user's number is too low
-            response = make_response(render_template("index.html", head="main", user=user, incorrect=True, guess="higher"))
+            response = response_number_guesses("index.html", "main", user, True, "higher", None) #TODO: če sam "success" namesto "main", test ne zazna napake
         elif number_input > number_secret: # user's number is too high
-            response = make_response(render_template("index.html", head="main", user=user, incorrect=True, guess="lower"))
+            response = response_number_guesses("index.html", "main", user, True, "lower", None)
 
         return response
 
@@ -77,7 +77,7 @@ def login():
         user.save()
 
         # creates response, saves session token in a cookie
-        response = make_response(redirect(url_for("index"))) # creates response that will redirect to the index function (refreshes the site)
+        response = response_redirect_index() # creates response that will redirect to the index function (refreshes the site)
         response.set_cookie("session_token", session_token, httponly=True, samesite="Strict") # sets cookie with the session token to recognise the user until the session expires or they log out
                                                                                             # httponly=True - cookie cannot be accessed via JavaScript. JS can be used to hack the site
                                                                                             # secure=True can be added, which would mean cookies can only be sent via HTTPS. Internet protocols that are NOT HTTPS are not secure.
@@ -92,7 +92,7 @@ def profile():
     if user:
         return render_template("profile.html", user=user)
     else:
-        return redirect(url_for("index"))
+        return response_redirect_index()
 
 # edits logged in user's information
 @app.route("/profile/edit", methods=["GET", "POST"])
@@ -103,7 +103,7 @@ def profile_edit():
         if user:  # if user is found
             return render_template("profile_edit.html", user=user)
         else:
-            return redirect(url_for("index"))
+            return response_redirect_index()
     elif request.method == "POST":
         # gets form input
         name = request.form.get("profile-name")
@@ -143,13 +143,13 @@ def profile_delete():
         if user:
             return render_template("profile_delete.html", user=user)
         else:
-            return redirect(url_for("index"))
+            return response_redirect_index()
     elif request.method == "POST":
         # user.delete()  deletes user from the database forever
         user.deleted = True # fake deletes the user in the database (they no longer show up but can be reactivated)
         user.save()
 
-        return redirect(url_for("index"))
+        return response_redirect_index()
 
 # renders page displaying all users
 @app.route("/users", methods=["GET"])
@@ -161,7 +161,7 @@ def users():
 
         return render_template("users.html", users=users)
     else:
-        return redirect(url_for("index"))
+        return response_redirect_index()
 
 # renders page for each user using their ID
 @app.route("/user/<user_id>", methods=["GET"]) # <user_id> takes whatever is entered (in this case through users.html) and puts it into the user_id variable
@@ -174,7 +174,7 @@ def user_details(user_id):
 # deletes session and reloads page
 @app.route("/logout", methods=["GET"])
 def logout():
-    response = make_response(redirect(url_for("index")))
+    response = response_redirect_index()
     response.set_cookie("session_token", "session_token", expires=0)
 
     return response
