@@ -50,21 +50,25 @@ def login():
     hashed_password = password_hash(password) # hashes the user entered password
     number_secret = number_secret_generate() # generates secret number
 
-
+# POPRAVI! ČE VPIŠEM NAROBNO IME IN MATCHING PASSWORD IN EMAIL ME VPIŠE
 
     if not user: # if a user with that email doesn't exist
         if database.query(User).filter_by(name=name).first(): # checks if there is already a user with the name the current user entered and responds
             return "Gosh, it looks like that username already exists with a different email." \
-                   "If you already have an account login using the right email. Otherwise try another name to create a new account."
-        else: # if the new user entered a unique name
+                   " If you already have an account login using the right email. Otherwise try another name to create a new account."
+        else: # if the NEW user entered a unique name
             # creates the new User object in the database
             user = User(name=name, email=email, password=hashed_password, number_secret=number_secret)
             user.save()
 
-    if hashed_password != user.password: # check if password is incorrect
+    if name != user.name:
+        return "Gosh, it looks like that name already exists." \
+                " If you already have an account login using the right name. Otherwise try another email to create a new account." # AVTOMATIZIRAJ TEST
+
+    elif hashed_password != user.password: # check if password is incorrect
         return "WRONG PASSWORD! :O Go back and try again."
 
-    elif hashed_password == user.password:
+    if hashed_password == user.password:
         # creates a random session token for this user
         session_token = str(uuid.uuid4())
 
@@ -150,9 +154,14 @@ def profile_delete():
 # renders page displaying all users
 @app.route("/users", methods=["GET"])
 def users():
-    users = user_get_all()
+    user = user_check()
 
-    return render_template("users.html", users=users)
+    if user:
+        users = user_get_all()
+
+        return render_template("users.html", users=users)
+    else:
+        return redirect(url_for("index"))
 
 # renders page for each user using their ID
 @app.route("/user/<user_id>", methods=["GET"]) # <user_id> takes whatever is entered (in this case through users.html) and puts it into the user_id variable
