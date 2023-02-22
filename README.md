@@ -3,4 +3,4 @@ A web game where you have to guess the number. Solo project for smart ninja cour
 
 Play the game here:
 
-https://web-production-c444.up.railway.app/
+web-production-3142.up.railway.app
