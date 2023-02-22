@@ -24,7 +24,7 @@ def index():
         number_input = int(request.form.get("number-input")) # gets user input number from website form
 
         # checks the secret number and creates appropriate response
-        if number_input >= 30 or number_input <= 0: # user entered invalid number
+        if number_input >= 31 or number_input <= 0: # user entered invalid number
             response = response_number_guesses("index.html", "main", user, True, "invalid", None)
         elif number_input == number_secret: # correct guess
             response = response_number_guesses("index.html", "success", user, False, None, number_input)
@@ -195,7 +195,7 @@ if __name__ == "__main__":
 #            run_game_hard()
 #        else:
 #            print()
-#            print("Oh jeez, worng input. Next time select 'y' for YES and 'n' for NO.")
+#            print("Oh jeez, wrong input. Next time select 'y' for YES and 'n' for NO.")
 #            print()
 #            continue
 #
