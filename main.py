@@ -13,7 +13,8 @@ database.create_all() # creates (new) tables in the database
 def index():
     if request.method == "GET": # what you take from the server
         user = user_check() # checks if there is a cookie with the user's email and creates a user object if there is
-        response = response_number_guesses("index.html", "main", user, None, None, None) # creates a response - renders template including the variable with the secret number
+        image_src = "../static/img/happy_icon.png"
+        response = response_number_guesses("index.html", "main", user, None, None, None, image_src) # creates a response - renders template including the variable with the secret number
 
         return response
 
@@ -25,16 +26,20 @@ def index():
 
         # checks the secret number and creates appropriate response
         if number_input >= 31 or number_input <= 0: # user entered invalid number
-            response = response_number_guesses("index.html", "main", user, True, "invalid", None)
+            image_src = "../static/img/oh_no_icon.png"
+            response = response_number_guesses("index.html", "main", user, True, "invalid", None, image_src)
         elif number_input == number_secret: # correct guess
-            response = response_number_guesses("index.html", "success", user, False, None, number_input)
+            image_src = "../static/img/very_happy_icon.png"
+            response = response_number_guesses("index.html", "success", user, False, None, number_input, image_src)
             # if numbers match, makes response, sets a new secret number and creates a cookie with it
             user.number_secret = number_secret_generate()
             user.save()
         elif  number_input < number_secret: # user's number is too low
-            response = response_number_guesses("index.html", "main", user, True, "higher", None) #TODO: če sam "success" namesto "main", test ne zazna napake
+            image_src = "../static/img/sad_icon.png"
+            response = response_number_guesses("index.html", "main", user, True, "higher", None, image_src) #TODO: če sam "success" namesto "main", test ne zazna napake
         elif number_input > number_secret: # user's number is too high
-            response = response_number_guesses("index.html", "main", user, True, "lower", None)
+            image_src = "../static/img/sad_icon.png"
+            response = response_number_guesses("index.html", "main", user, True, "lower", None, image_src)
 
         return response
 
@@ -50,7 +55,7 @@ def login():
     hashed_password = password_hash(password) # hashes the user entered password
     number_secret = number_secret_generate() # generates secret number
 
-# POPRAVI! ČE VPIŠEM NAROBNO IME IN MATCHING PASSWORD IN EMAIL ME VPIŠE
+# TODO: ČE VPIŠEM NAROBNO IME IN MATCHING PASSWORD IN EMAIL ME VPIŠE
 
     if not user: # if a user with that email doesn't exist
         if database.query(User).filter_by(name=name).first(): # checks if there is already a user with the name the current user entered and responds
@@ -182,7 +187,7 @@ def logout():
 if __name__ == "__main__":
     app.run(use_reloader=True)
 
-# PREEXISTING CODE FOR REFERENCE
+# ARCHIVE CODE FOR REFERENCE
 # while True:
 #     main_menu = str(input("Would you like to A) play a new game, B) see the best scores, or C) quit? ")).lower()
 #
